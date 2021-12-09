@@ -39,6 +39,7 @@ public class PlayingState extends GameState {
 
     @Override
     public void keyPressed(int key) {
+//        FIXME fix this part - strange one
         if(selected == -1 && key != KeyEvent.VK_ESCAPE) {
             selected = 0;
             return;
