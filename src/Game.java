@@ -3,6 +3,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 // FIXME add pre-commit, and other stuff
+// TODO exe file to run the game
 public class Game {
 
     public static final GameStateManager STATE_MANAGER = new GameStateManager();
