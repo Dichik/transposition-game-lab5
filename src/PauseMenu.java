@@ -1,26 +1,20 @@
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.util.stream.IntStream;
 
-public class MainMenu extends GameState {
+public class PauseMenu extends GameState {
 
-    protected String[] options;
-    protected int selected;
-
+    private String[] options;
+    private Integer selected;
 
     @Override
     protected void init() {
-        options = new String[]{
-                "StartGame",
-                "Exit"
-        };
-        selected = 0;
-
-        System.out.println("[MainMenu] created successfully.");
+        this.options = new String[]{"Return to game", "Go to menu"};
+        this.selected = 0;
     }
 
     @Override
     public void tick() {
+
     }
 
     @Override
@@ -38,9 +32,10 @@ public class MainMenu extends GameState {
             selected = (selected + 1) % options.length;
         } else if (key == KeyEvent.VK_ENTER) {
             if (selected == 0) {
-                Game.STATE_MANAGER.changeState(new Level());
+                Game.STATE_MANAGER.backToPrevious();
             } else if (selected == 1) {
-                System.exit(0);
+                Game.STATE_MANAGER.clear();
+                Game.STATE_MANAGER.changeState(new MainMenu());
             }
         }
     }
@@ -55,7 +50,7 @@ public class MainMenu extends GameState {
     }
 
     private void drawOptions(Graphics graphics) {
-        Level.drawingOptions(graphics, this.options, selected);
+        Level.drawingOptions(graphics, this.options, this.selected);
     }
 
 }

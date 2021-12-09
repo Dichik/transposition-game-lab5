@@ -35,4 +35,7 @@ public class GameStateManager {
         this.gameStackStates.peek().tick();
     }
 
+    public void clear() {
+        this.gameStackStates.clear();
+    }
 }

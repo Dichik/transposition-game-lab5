@@ -44,7 +44,7 @@ public class PlayingState extends GameState {
             return;
         }
         if(key == KeyEvent.VK_ESCAPE) {
-            Game.STATE_MANAGER.backToPrevious();
+            Game.STATE_MANAGER.changeState(new PauseMenu());
         } else if(key == KeyEvent.VK_LEFT) {
             selected--;
             if(selected < 0) selected = Grid.SIZE - 1;
@@ -58,6 +58,7 @@ public class PlayingState extends GameState {
                 wasChosen = selected;
                 selected = -1;
             }
+//            TODO start from same selected position (not from 0)
             if(grid.checkEvenNumbers() || grid.checkOddNumbers()) {
                 Game.STATE_MANAGER.backToPrevious();
                 // TODO message about victory and who won (Sorry, but you've lost...)
@@ -65,6 +66,7 @@ public class PlayingState extends GameState {
             // TODO check if there is a winner
             // FIXME what to do when ENTER pressed...
         }
+//        TODO sleep for a while and mark both pieces as selected
     }
     // TODO add history of movements
 
@@ -84,17 +86,21 @@ public class PlayingState extends GameState {
             graphics.drawRect(i * 100 + 100, 50, 100, 100);
             if(selected != i && wasChosen != i) {
                 graphics.setColor(Color.GRAY);
+                graphics.fillRect(i * 100 + 100 + 1, 50 + 1, 100 - 2, 100 - 2);
             } else if(selected == i) {
                 graphics.setColor(new Color(145, 252, 241, 179));
+                graphics.fillRect(i * 100 + 100 + 1, 50 + 1, 100 - 2, 100 - 2);
             } else if(wasChosen == i) {
-                graphics.setColor(new Color(138, 67, 121));
+                graphics.setColor(new Color(100, 100, 100));
+                graphics.fillRect(i * 100 + 100 + 1, 50 + 1, 100 - 4, 100 - 4);
             }
-            graphics.fillRect(i * 100 + 100 + 1, 50 + 1, 100 - 2, 100 - 2);
+//            FIXME colors - globally declared
+//            FIXME different numbers - globally declared
             if(Grid.array[i] % 2 == 0) {
                 graphics.setColor(Color.GREEN);
             } else graphics.setColor(Color.RED);
 
-            graphics.setFont(new Font("Roboto", Font.PLAIN, 25));
+            graphics.setFont(new Font("Roboto", Font.PLAIN, 40));
             FontMetrics fm = graphics.getFontMetrics();
             graphics.drawString(String.valueOf(Grid.array[i]), 100 * i + 150 -
                     fm.stringWidth(String.valueOf(Grid.array[i])) / 2, 100);
