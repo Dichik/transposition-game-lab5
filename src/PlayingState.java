@@ -10,6 +10,14 @@ public class PlayingState extends GameState {
 
     private boolean lost;
 
+    private LevelType levelType;
+    private Boolean youMoveFirst;
+
+    public PlayingState(LevelType levelType, Boolean youMoveFirst) {
+        this.levelType = levelType;
+        this.youMoveFirst = youMoveFirst;
+    }
+
     @Override
     protected void init() {
         lost = false;
@@ -31,7 +39,7 @@ public class PlayingState extends GameState {
 
     @Override
     public void keyPressed(int key) {
-        if(selected == -1) {
+        if(selected == -1 && key != KeyEvent.VK_ESCAPE) {
             selected = 0;
             return;
         }
@@ -62,8 +70,13 @@ public class PlayingState extends GameState {
 
     @Override
     public void keyReleased(int key) {
-
     }
+
+    // TODO add ability to choose size of array [N] mod 2 == 0
+
+    // TODO add button to retry
+
+    // FIXME add better styles
 
     private void drawBackground(Graphics graphics) {
         for(int i = 0; i < 8; ++ i) {

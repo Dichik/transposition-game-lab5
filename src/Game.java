@@ -14,6 +14,8 @@ public class Game {
         startGame();
     }
 
+//    TODO add pause menu
+
     private static void startGame() {
         System.out.println("[Game] starting...");
 
