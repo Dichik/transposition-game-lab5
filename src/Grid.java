@@ -33,4 +33,8 @@ public class Grid {
         return IntStream.range(0, list.size() - 1).noneMatch(i -> list.get(i) < list.get(i + 1));
     }
 
+    public boolean checkIfWeCanMakeMove(int firstPosition, int secondPosition) {
+        return array[firstPosition] < array[secondPosition];
+    }
+
 }
