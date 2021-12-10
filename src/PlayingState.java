@@ -10,8 +10,10 @@ public class PlayingState extends GameState {
 
     private boolean lost;
 
-    private LevelType levelType;
-    private Boolean youMoveFirst;
+    private final LevelType levelType;
+    private final Boolean youMoveFirst;
+
+    static Boolean yourTurn;
 
     public PlayingState(LevelType levelType, Boolean youMoveFirst) {
         this.levelType = levelType;
@@ -20,15 +22,16 @@ public class PlayingState extends GameState {
 
     @Override
     protected void init() {
-        lost = false;
-        selected = wasChosen = -1; // piece was not chosen, if wasChosen
-        grid = new Grid();
+        this.lost = false;
+        yourTurn = true;
+        this.selected = 0;
+        this.wasChosen = -1; // piece was not chosen, if wasChosen
+        this.grid = new Grid();
     }
 
     @Override
     public void tick() {
         if(!lost) {
-
         }
     }
 
@@ -39,33 +42,28 @@ public class PlayingState extends GameState {
 
     @Override
     public void keyPressed(int key) {
-//        FIXME fix this part - strange one
-        if(selected == -1 && key != KeyEvent.VK_ESCAPE) {
-            selected = 0;
-            return;
-        }
-        if(key == KeyEvent.VK_ESCAPE) {
-            Game.STATE_MANAGER.changeState(new PauseMenu());
-        } else if(key == KeyEvent.VK_LEFT) {
-            selected--;
-            if(selected < 0) selected = Grid.SIZE - 1;
-        } else if(key == KeyEvent.VK_RIGHT) {
-            selected = (selected + 1) % Grid.SIZE;
-        } else if(key == KeyEvent.VK_ENTER) {
-            if(wasChosen != -1) {
-                grid.swapOnPositions(wasChosen, selected);
-                wasChosen = -1;
-            } else {
-                wasChosen = selected;
-                selected = -1;
+        if(yourTurn) {
+            if(key == KeyEvent.VK_ESCAPE) {
+                Game.STATE_MANAGER.changeState(new PauseMenu());
+            } else if(key == KeyEvent.VK_LEFT) {
+                selected--;
+                if(selected < 0) selected = Grid.SIZE - 1;
+            } else if(key == KeyEvent.VK_RIGHT) {
+                selected = (selected + 1) % Grid.SIZE;
+            } else if(key == KeyEvent.VK_ENTER) {
+                if(wasChosen != -1) {
+                    grid.swapOnPositions(wasChosen, selected);
+                    wasChosen = -1;
+                } else {
+                    wasChosen = selected;
+                }
+                if(grid.checkEvenNumbers() || grid.checkOddNumbers()) {
+                    Game.STATE_MANAGER.backToPrevious();
+                    // TODO message about victory and who won (Sorry, but you've lost...)
+                }
+                // TODO check if there is a winner
+                // FIXME what to do when ENTER pressed...
             }
-//            TODO start from same selected position (not from 0)
-            if(grid.checkEvenNumbers() || grid.checkOddNumbers()) {
-                Game.STATE_MANAGER.backToPrevious();
-                // TODO message about victory and who won (Sorry, but you've lost...)
-            }
-            // TODO check if there is a winner
-            // FIXME what to do when ENTER pressed...
         }
 //        TODO sleep for a while and mark both pieces as selected
     }
