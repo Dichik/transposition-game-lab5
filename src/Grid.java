@@ -11,12 +11,19 @@ public class Grid {
     public static final Integer SIZE = 8;
 
     private static Set<Integer> computerMoves;
+    private Integer depth;
 
     public Grid() {
         array = new Integer[SIZE];
         computerMoves = new HashSet<>();
 
         IntStream.rangeClosed(1, SIZE).forEachOrdered(i -> array[i - 1] = i);
+    }
+
+    public void makeMove(int d) {
+        this.depth = d;
+
+        runMiniMax();
     }
 
     public boolean madeByComputer(int x) {
@@ -62,6 +69,10 @@ public class Grid {
     public static boolean checkIfWeCanMakeMove(int firstPosition, int secondPosition) {
         return array[Math.min(firstPosition, secondPosition)] <
                 array[Math.max(secondPosition, firstPosition)];
+    }
+
+    private void runMiniMax() {
+
     }
 
 }
