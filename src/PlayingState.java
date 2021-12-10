@@ -1,5 +1,7 @@
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.sql.Time;
+import java.util.concurrent.TimeUnit;
 
 public class PlayingState extends GameState {
 
@@ -31,7 +33,11 @@ public class PlayingState extends GameState {
 
     @Override
     public void tick() {
-        if(!lost) {
+        if (!yourTurn) {
+            // TODO message about victory and who won (Sorry, but you've lost...)
+            Grid.makeFirstPossibleMove();
+            grid.clearComputerMoves();
+            changeTurn();
         }
     }
 
@@ -42,24 +48,24 @@ public class PlayingState extends GameState {
 
     @Override
     public void keyPressed(int key) {
-        if(yourTurn) {
-            if(key == KeyEvent.VK_ESCAPE) {
+        if (yourTurn) {
+            if (key == KeyEvent.VK_ESCAPE) {
                 Game.STATE_MANAGER.changeState(new PauseMenu());
-            } else if(key == KeyEvent.VK_LEFT) {
+            } else if (key == KeyEvent.VK_LEFT) {
                 selected--;
-                if(selected < 0) selected = Grid.SIZE - 1;
-            } else if(key == KeyEvent.VK_RIGHT) {
+                if (selected < 0) selected = Grid.SIZE - 1;
+            } else if (key == KeyEvent.VK_RIGHT) {
                 selected = (selected + 1) % Grid.SIZE;
-            } else if(key == KeyEvent.VK_ENTER) {
-                if(wasChosen != -1) {
-                    grid.swapOnPositions(wasChosen, selected);
+            } else if (key == KeyEvent.VK_ENTER) {
+                if (wasChosen != -1) {
+                    Grid.swapOnPositions(wasChosen, selected);
                     wasChosen = -1;
+                    changeTurn();
                 } else {
                     wasChosen = selected;
                 }
-                if(grid.checkEvenNumbers() || grid.checkOddNumbers()) {
+                if (grid.checkEvenNumbers() || grid.checkOddNumbers()) {
                     Game.STATE_MANAGER.backToPrevious();
-                    // TODO message about victory and who won (Sorry, but you've lost...)
                 }
                 // TODO check if there is a winner
                 // FIXME what to do when ENTER pressed...
@@ -79,23 +85,39 @@ public class PlayingState extends GameState {
 
     // FIXME add better styles
 
+    private void changeTurn() {
+        yourTurn = !yourTurn;
+    }
+
     private void drawBackground(Graphics graphics) {
-        for(int i = 0; i < 8; ++ i) {
+        for (int i = 0; i < 8; ++i) {
             graphics.setColor(Color.BLACK);
             graphics.drawRect(i * 100 + 100, 50, 100, 100);
-            if(selected != i && wasChosen != i) {
-                graphics.setColor(Color.GRAY);
-                graphics.fillRect(i * 100 + 100 + 1, 50 + 1, 100 - 2, 100 - 2);
-            } else if(selected == i) {
-                graphics.setColor(new Color(145, 252, 241, 179));
-                graphics.fillRect(i * 100 + 100 + 1, 50 + 1, 100 - 2, 100 - 2);
-            } else if(wasChosen == i) {
-                graphics.setColor(new Color(100, 100, 100));
-                graphics.fillRect(i * 100 + 100 + 1, 50 + 1, 100 - 4, 100 - 4);
+//            FIXME fix these cases
+
+            if(!yourTurn) {
+                if(grid.madeByComputer(i)) {
+                    graphics.setColor(new Color(100, 100, 100));
+                    graphics.fillRect(i * 100 + 100 + 1, 50 + 1, 100 - 4, 100 - 4);
+                } else {
+                    graphics.setColor(Color.GRAY);
+                    graphics.fillRect(i * 100 + 100 + 1, 50 + 1, 100 - 2, 100 - 2);
+                }
+            } else {
+                if (selected == i) {
+                    graphics.setColor(new Color(145, 252, 241, 179));
+                    graphics.fillRect(i * 100 + 100 + 1, 50 + 1, 100 - 2, 100 - 2);
+                } else if (wasChosen == i) {
+                    graphics.setColor(new Color(100, 100, 100));
+                    graphics.fillRect(i * 100 + 100 + 1, 50 + 1, 100 - 4, 100 - 4);
+                } else {
+                    graphics.setColor(Color.GRAY);
+                    graphics.fillRect(i * 100 + 100 + 1, 50 + 1, 100 - 2, 100 - 2);
+                }
             }
 //            FIXME colors - globally declared
 //            FIXME different numbers - globally declared
-            if(Grid.array[i] % 2 == 0) {
+            if (Grid.array[i] % 2 == 0) {
                 graphics.setColor(Color.GREEN);
             } else graphics.setColor(Color.RED);
 
