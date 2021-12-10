@@ -1,7 +1,6 @@
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.sql.Time;
-import java.util.concurrent.TimeUnit;
 
 public class PlayingState extends GameState {
 
@@ -39,6 +38,15 @@ public class PlayingState extends GameState {
             grid.clearComputerMoves();
             changeTurn();
         }
+
+        if (grid.checkEvenNumbers() || grid.checkOddNumbers()) {
+            if (yourTurn) {
+                JOptionPane.showMessageDialog(new JFrame(), "Sorry, but you lost");
+            } else JOptionPane.showMessageDialog(new JFrame(), "Congrats, you've done it");
+
+            Game.STATE_MANAGER.clear();
+            Game.STATE_MANAGER.changeState(new MainMenu());
+        }
     }
 
     @Override
@@ -50,7 +58,9 @@ public class PlayingState extends GameState {
     public void keyPressed(int key) {
         if (yourTurn) {
             if (key == KeyEvent.VK_ESCAPE) {
-                Game.STATE_MANAGER.changeState(new PauseMenu());
+                if(wasChosen == -1) {
+                    Game.STATE_MANAGER.changeState(new PauseMenu());
+                } else wasChosen = -1;
             } else if (key == KeyEvent.VK_LEFT) {
                 selected--;
                 if (selected < 0) selected = Grid.SIZE - 1;
@@ -64,13 +74,15 @@ public class PlayingState extends GameState {
                 } else {
                     wasChosen = selected;
                 }
-                if (grid.checkEvenNumbers() || grid.checkOddNumbers()) {
-                    Game.STATE_MANAGER.backToPrevious();
-                }
                 // TODO check if there is a winner
                 // FIXME what to do when ENTER pressed...
             }
         }
+
+        // FIXME cant choose already chosen
+
+        // FIXME add validation for your move
+
 //        TODO sleep for a while and mark both pieces as selected
     }
     // TODO add history of movements
@@ -95,8 +107,8 @@ public class PlayingState extends GameState {
             graphics.drawRect(i * 100 + 100, 50, 100, 100);
 //            FIXME fix these cases
 
-            if(!yourTurn) {
-                if(grid.madeByComputer(i)) {
+            if (!yourTurn) {
+                if (grid.madeByComputer(i)) {
                     graphics.setColor(new Color(100, 100, 100));
                     graphics.fillRect(i * 100 + 100 + 1, 50 + 1, 100 - 4, 100 - 4);
                 } else {

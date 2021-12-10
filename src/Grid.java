@@ -25,8 +25,8 @@ public class Grid {
 
     public static void makeFirstPossibleMove() {
         for(int i = 0; i < SIZE - 1; ++ i) {
-            for(int j = i + 1; j < SIZE; ++ j) {
-                if(checkIfWeCanMakeMove(array[i], array[j])) {
+            for(int j = i + 1; j < SIZE - 1; ++ j) {
+                if(checkIfWeCanMakeMove(i, j)) {
                     swapOnPositions(i, j);
                     computerMoves.addAll(List.of(i, j));
                     return;
