@@ -60,7 +60,8 @@ public class Grid {
     }
 
     public static boolean checkIfWeCanMakeMove(int firstPosition, int secondPosition) {
-        return array[firstPosition] < array[secondPosition];
+        return array[Math.min(firstPosition, secondPosition)] <
+                array[Math.max(secondPosition, firstPosition)];
     }
 
 }

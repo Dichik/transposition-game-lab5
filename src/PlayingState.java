@@ -40,7 +40,7 @@ public class PlayingState extends GameState {
         }
 
         if (grid.checkEvenNumbers() || grid.checkOddNumbers()) {
-            if (yourTurn) {
+            if (grid.checkEvenNumbers()) {
                 JOptionPane.showMessageDialog(new JFrame(), "Sorry, but you lost");
             } else JOptionPane.showMessageDialog(new JFrame(), "Congrats, you've done it");
 
@@ -67,21 +67,15 @@ public class PlayingState extends GameState {
             } else if (key == KeyEvent.VK_RIGHT) {
                 selected = (selected + 1) % Grid.SIZE;
             } else if (key == KeyEvent.VK_ENTER) {
-                if (wasChosen != -1) {
+                if (wasChosen != -1 && Grid.checkIfWeCanMakeMove(wasChosen, selected)) {
                     Grid.swapOnPositions(wasChosen, selected);
                     wasChosen = -1;
                     changeTurn();
-                } else {
+                } else if(selected != wasChosen) {
                     wasChosen = selected;
                 }
-                // TODO check if there is a winner
-                // FIXME what to do when ENTER pressed...
             }
         }
-
-        // FIXME cant choose already chosen
-
-        // FIXME add validation for your move
 
 //        TODO sleep for a while and mark both pieces as selected
     }
