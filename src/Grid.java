@@ -1,7 +1,4 @@
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -11,7 +8,6 @@ public class Grid {
     public static final Integer SIZE = 8;
 
     private static Set<Integer> computerMoves;
-    private Integer depth;
 
     public Grid() {
         array = new Integer[SIZE];
@@ -21,25 +17,50 @@ public class Grid {
     }
 
     public void makeMove(int d) {
-        this.depth = d;
+        int best = minimax(new ArrayList<>(List.of(array)), d, true);
 
-        runMiniMax();
+        System.out.println("Best: " + best);
+
+        for (int i = 0; i < SIZE - 1; ++i) {
+            for (int j = i + 1; j < SIZE - 1; ++j) {
+                if (checkIfWeCanMakeMove(i, j)) {
+                    swapOnPositions(i, j);
+                    if (f(new ArrayList<>(List.of(array))) >= best) {
+                        computerMoves.addAll(List.of(i, j));
+                        return;
+                    } else swapOnPositions(i, j);
+                }
+            }
+        }
+    }
+
+    private static int f(List<Integer> list) {
+        int count = 0;
+        List<Integer> evens = list.stream().filter(p -> p % 2 == 0)
+                .collect(Collectors.toList());
+        int temp = 0;
+        for (int i = 0; i < evens.size() - 1; ++i) {
+            if (evens.get(i) > evens.get(i + 1)) {
+                temp++;
+            }
+        }
+        count += (temp > 0) ? temp + 1 : 0;
+        temp = 0;
+
+        List<Integer> odds = list.stream().filter(p -> p % 2 == 1)
+                .collect(Collectors.toList());
+        for (int i = 0; i < odds.size() - 1; ++i) {
+            if(odds.get(i) > odds.get(i + 1)) {
+                temp++;
+            }
+        }
+        count -= (temp > 0) ? temp + 1 : 0;
+
+        return count;
     }
 
     public boolean madeByComputer(int x) {
         return computerMoves.contains(x);
-    }
-
-    public static void makeFirstPossibleMove() {
-        for(int i = 0; i < SIZE - 1; ++ i) {
-            for(int j = i + 1; j < SIZE - 1; ++ j) {
-                if(checkIfWeCanMakeMove(i, j)) {
-                    swapOnPositions(i, j);
-                    computerMoves.addAll(List.of(i, j));
-                    return;
-                }
-            }
-        }
     }
 
     public void clearComputerMoves() {
@@ -50,6 +71,13 @@ public class Grid {
         int x = array[firstPosition];
         array[firstPosition] = array[secondPosition];
         array[secondPosition] = x;
+    }
+
+    public static boolean checkEvenNumbers(List<Integer> a) {
+        List<Integer> list = a.stream()
+                .filter(element -> element % 2 == 0)
+                .collect(Collectors.toList());
+        return IntStream.range(0, list.size() - 1).noneMatch(i -> list.get(i) < list.get(i + 1));
     }
 
     public boolean checkEvenNumbers() {
@@ -66,12 +94,61 @@ public class Grid {
         return IntStream.range(0, list.size() - 1).noneMatch(i -> list.get(i) < list.get(i + 1));
     }
 
+    public static boolean checkOddNumbers(List<Integer> a) {
+        List<Integer> list = a.stream()
+                .filter(element -> element % 2 == 1)
+                .collect(Collectors.toList());
+        return IntStream.range(0, list.size() - 1).noneMatch(i -> list.get(i) < list.get(i + 1));
+    }
+
     public static boolean checkIfWeCanMakeMove(int firstPosition, int secondPosition) {
         return array[Math.min(firstPosition, secondPosition)] <
                 array[Math.max(secondPosition, firstPosition)];
     }
 
-    private void runMiniMax() {
+    private static boolean hasWinner(List<Integer> list) {
+        return checkEvenNumbers(list) || checkOddNumbers(list);
+    }
+
+    private static int minimax(List<Integer> position, int depth, boolean maximizingPlayer) {
+        if (depth == 0 || hasWinner(position)) {
+            return f(position);
+        }
+
+        if (maximizingPlayer) {
+            int maxEval = Integer.MIN_VALUE;
+            for (int i = 0; i < SIZE - 1; ++i) {
+                for (int j = i + 1; j < SIZE; ++j) {
+                    if (position.get(i) < position.get(j)) {
+                        List<Integer> child = new ArrayList<>(position);
+                        int x = child.get(i);
+                        child.set(i, child.get(j));
+                        child.set(j, x);
+                        int eval = minimax(new ArrayList<>(position), depth - 1, false);
+                        maxEval = Math.max(maxEval, eval);
+                    }
+                }
+            }
+            return maxEval;
+        } else {
+            int minEval = Integer.MAX_VALUE;
+
+            for (int i = 0; i < SIZE - 1; ++i) {
+                for (int j = i + 1; j < SIZE; ++j) {
+                    if (position.get(i) < position.get(j)) {
+                        List<Integer> child = new ArrayList<>(position);
+                        int x = child.get(i);
+                        child.set(i, child.get(j));
+                        child.set(j, x);
+                        int eval = minimax(new ArrayList<>(position), depth - 1, true);
+                        minEval = Math.min(minEval, eval);
+                    }
+                }
+            }
+
+            return minEval;
+
+        }
 
     }
 

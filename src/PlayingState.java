@@ -36,12 +36,13 @@ public class PlayingState extends GameState {
 
             switch (levelType) {
                 case EASY:
-                    Grid.makeFirstPossibleMove(); break;
+                    grid.makeMove(3);
+                    break;
                 case MEDIUM:
-                    grid.makeMove(1); // FIXME constants
+                    grid.makeMove(4); // FIXME constants
                     break;
                 case HARD:
-                    grid.makeMove(3);
+                    grid.makeMove(5);
                     break;
             }
 
