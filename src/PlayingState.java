@@ -32,14 +32,25 @@ public class PlayingState extends GameState {
 
     @Override
     public void tick() {
-        if (!yourTurn) {
-            // TODO message about victory and who won (Sorry, but you've lost...)
-            Grid.makeFirstPossibleMove();
+        if (!yourTurn && !lostStage()) {
+
+            switch (levelType) {
+                case EASY:
+                    grid.makeMove(3);
+                    break;
+                case MEDIUM:
+                    grid.makeMove(4); // FIXME constants
+                    break;
+                case HARD:
+                    grid.makeMove(5);
+                    break;
+            }
+
             grid.clearComputerMoves();
             changeTurn();
         }
 
-        if (grid.checkEvenNumbers() || grid.checkOddNumbers()) {
+        if (lostStage()) {
             if (grid.checkEvenNumbers()) {
                 JOptionPane.showMessageDialog(new JFrame(), "Sorry, but you lost");
             } else JOptionPane.showMessageDialog(new JFrame(), "Congrats, you've done it");
@@ -47,6 +58,10 @@ public class PlayingState extends GameState {
             Game.STATE_MANAGER.clear();
             Game.STATE_MANAGER.changeState(new MainMenu());
         }
+    }
+
+    private boolean lostStage() {
+        return grid.checkEvenNumbers() || grid.checkOddNumbers();
     }
 
     @Override
